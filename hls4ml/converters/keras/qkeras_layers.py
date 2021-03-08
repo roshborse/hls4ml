@@ -12,8 +12,8 @@ import tensorflow as tf
 
 @keras_handler('QDense')
 def parse_qdense_layer(keras_layer, input_names, input_shapes, data_reader, config):
-    
-    
+
+
     layer, output_shape = parse_dense_layer(keras_layer, input_names, input_shapes, data_reader, config)
 
     layer['weight_quantizer'] = get_quantizer_from_config(keras_layer, 'kernel')
@@ -39,7 +39,7 @@ def parse_qconv_layer(keras_layer, input_names, input_shapes, data_reader, confi
         layer['bias_quantizer'] = get_quantizer_from_config(keras_layer, 'bias')
     else:
         layer['bias_quantizer'] = None
-    
+
     return layer, output_shape
 
 
@@ -47,7 +47,7 @@ def parse_qconv_layer(keras_layer, input_names, input_shapes, data_reader, confi
 def parse_qactivation_layer(keras_layer, input_names, input_shapes, data_reader, config):
     assert(keras_layer['class_name'] == 'QActivation')
     supported_activations = ['quantized_relu', 'quantized_tanh', 'binary_tanh', 'ternary_tanh', 'quantized_bits', 'binary', 'ternary']
-    
+
     layer = parse_default_keras_layer(keras_layer, input_names)
 
     activation_config = keras_layer['config']['activation']
@@ -72,7 +72,19 @@ def parse_qactivation_layer(keras_layer, input_names, input_shapes, data_reader,
             activation_config['config']['integer'] = 2
         else:
             activation_config['class_name'] = 'unknown'
-    
+
+            if 'binary' in quantizer_obj.__name__:
+                activation_config['class_name'] = 'binary_tanh'
+                activation_config['config']['bits'] = 1
+                activation_config['config']['integer'] = 1
+            elif 'ternary' in quantizer_obj.__name__:
+                activation_config['class_name'] = 'ternary_tanh'
+                activation_config['config']['bits'] = 2
+                activation_config['config']['integer'] = 2
+            else:
+                activation_config['class_name'] = 'unknown'
+
+>>>>>>> 89c3d85... Added QConv2DBatchnorm support.
     if activation_config['class_name'] not in supported_activations:
         raise Exception('Unsupported QKeras activation: {}'.format(activation_config['class_name']))
 
@@ -91,7 +103,7 @@ def parse_qactivation_layer(keras_layer, input_names, input_shapes, data_reader,
 
 @keras_handler('QBatchNormalization')
 def parse_qbatchnorm_layer(keras_layer, input_names, input_shapes, data_reader, config):
-    
+
     layer, output_shape = parse_batchnorm_layer(keras_layer, input_names, input_shapes, data_reader, config)
 
     layer['mean_quantizer'] = get_quantizer_from_config(keras_layer, 'mean')

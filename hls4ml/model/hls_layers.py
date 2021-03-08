@@ -2007,7 +2007,7 @@ layer_map = {
     'GarNet'                 : GarNet,
     'GarNetStack'            : GarNetStack,
     # TensorFlow-specific layers:
-    'BiasAdd': BiasAdd,
+    'BiasAdd'                : BiasAdd,
 }
 
 def register_layer(name, clazz):

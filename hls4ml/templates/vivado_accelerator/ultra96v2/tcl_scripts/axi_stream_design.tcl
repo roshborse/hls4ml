@@ -4,7 +4,7 @@ source [file join $tcldir project.tcl]
 
 create_project project_1 ${myproject}_vivado_accelerator -part xczu9eg-ffvb1156-2-e -force
 
-set_property board_part em.avnet.com:ultra96:part0:1.2 [current_project]
+set_property board_part avnet.com:ultra96v2:part0:1.2 [current_project]
 set_property  ip_repo_paths  ${myproject}_prj [current_project]
 update_ip_catalog
 
